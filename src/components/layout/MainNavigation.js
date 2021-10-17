@@ -11,6 +11,7 @@ function MainNavigation() {
                 <Navbar.Brand as={Link} to='/'>Recipe React</Navbar.Brand>
                 <Nav className="me-auto">
                     <Nav.Link as={Link} to='/'>Home</Nav.Link>
+                    <Nav.Link as={Link} to='/create'>Create Recipe</Nav.Link>
                     <Nav.Link as={Link} to='/register'>Register</Nav.Link>
                     <Nav.Link as={Link} to='/login'>Login</Nav.Link>
                 </Nav>

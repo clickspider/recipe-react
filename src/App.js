@@ -7,6 +7,7 @@ import MainNavigation from './components/layout/MainNavigation';
 import Home from './pages/Home';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import CreateRecipe from './pages/CreateRecipe';
 
 import './App.css';
 
@@ -23,6 +24,8 @@ function App() {
         <Route path='/login' component={Login} />
 
         <Route path='/register' component={Register} />
+
+        <Route path='/create' component={CreateRecipe} />
       </Switch>
     </MainLayout>
   </>
