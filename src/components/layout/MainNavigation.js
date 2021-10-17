@@ -8,9 +8,9 @@ function MainNavigation() {
     return (
         <Navbar bg="dark" variant="dark">
             <Container>
-                <Navbar.Brand href="#home">Recipe React</Navbar.Brand>
+                <Navbar.Brand as={Link} to='/'>Recipe React</Navbar.Brand>
                 <Nav className="me-auto">
-                    <Nav.Link as={Link} href="#home" to='/'>Home</Nav.Link>
+                    <Nav.Link as={Link} to='/'>Home</Nav.Link>
                     <Nav.Link as={Link} to='/register'>Register</Nav.Link>
                     <Nav.Link as={Link} to='/login'>Login</Nav.Link>
                 </Nav>
