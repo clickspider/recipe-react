@@ -3,7 +3,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 function RecipeCard({ recipe }) {
-    return <Row md={12}>
+    return <Row sm={1} md={12}>
         <Col>
             <Card>
                 <Card.Img variant="top" src={recipe.image} />
