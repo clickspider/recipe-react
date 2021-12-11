@@ -4,62 +4,35 @@ import Image from 'react-bootstrap/Image'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 
-const recipeData = {
-    image: null,
-    imageUrl: "https://via.placeholder.com/150",
-    ingredients: [{ value: '' }],
-};
-
 function CreateRecipeForm(props) {
 
-    const [recipe, setRecipe] = useState(recipeData);
+    const [image, setImage] = useState(null);
+    const [imageUrl, setImageUrl] = useState("https://via.placeholder.com/150");
+    const [ingredients, setIngredients] = useState([{ value: "" }]);
     const urlInputRef = useRef();
     const labelInputRef = useRef();
     const checkboxInputRef = useRef();
     const selectInputRef = useRef();
 
-    function updateIngredient(ingredientToUpdate, newIngredientValue) {
-        setRecipe((prevRecipe) => {
-            const newIngredients = [...prevRecipe.ingredients];
-            const index = newIngredients.findIndex(prevIngredient => prevIngredient?.value === ingredientToUpdate?.value)
+    function updateIngredients(ingredientToUpdate, newIngredientValue) {
+        setIngredients((prevIngredients) => {
+            const copyIngredients = [...prevIngredients];
+            const index = copyIngredients.findIndex(prevIngredient => prevIngredient === ingredientToUpdate)
             if (index === -1) return console.error('Could not find ingredient to update');
-            newIngredients[index].value = newIngredientValue;
-            return {
-                ...prevRecipe,
-                ingredients: newIngredients
-            };
+            copyIngredients[index].value = newIngredientValue;
+            return copyIngredients;
         })
     };
 
-    function updateImageUrl(newImageUrl) {
-        setRecipe((prevRecipe) => {
-            return { ...prevRecipe, imageUrl: newImageUrl }
-        });
+    function addIngredients() {
+        setIngredients(prevIngredients => [...prevIngredients, { value: '' }]);
     };
 
-    function updateImage(newImage) {
-        setRecipe((prevRecipe) => {
-            return { ...prevRecipe, image: newImage }
-        });
-    };
-
-    function addIngredient() {
-        setRecipe((prevRecipe) => {
-            return {
-                ...prevRecipe,
-                ingredients: [...prevRecipe.ingredients, { value: '' }]
-            };
-        })
-    };
-
-    function removeIngredient() {
-        setRecipe((prevRecipe) => {
-            const newIngredients = [...prevRecipe.ingredients];
-            newIngredients.pop();
-            return {
-                ...prevRecipe,
-                ingredients: newIngredients
-            };
+    function removeIngredients() {
+        setIngredients((prevIngredients) => {
+            const copyIngredients = [...prevIngredients];
+            copyIngredients.pop();
+            return copyIngredients;
         })
     };
 
@@ -69,10 +42,10 @@ function CreateRecipeForm(props) {
         if (file.type.match("image.*")) {
             const fileReader = new FileReader();
             fileReader.addEventListener("load", () => {
-                updateImageUrl(fileReader.result)
+                setImageUrl(fileReader.result)
             });
             fileReader.readAsDataURL(file);
-            return updateImage(file);
+            return setImage(file);
         }
         return alert("Images only!");
     }
@@ -85,7 +58,9 @@ function CreateRecipeForm(props) {
         const enteredSelect = selectInputRef.current?.value;
 
         const recipeData = {
-            ...recipe,
+            image,
+            imageUrl,
+            ingredients,
             url: enteredUrl,
             label: enteredLabel,
             vegetarian: enteredCheckbox,
@@ -95,20 +70,20 @@ function CreateRecipeForm(props) {
         props.onAddRecipe(recipeData);
     };
 
-    const IngredientsList = recipe.ingredients.map((ingredient, index) => {
-        return <Form.Control key={index} type="text" placeholder="Add your ingredient" onChange={(event) => updateIngredient(ingredient, event.target.value)} />
+    const ingredientsList = ingredients.map((ingredient, index) => {
+        return <Form.Control key={index} type="text" placeholder="Add your ingredient" onChange={(event) => updateIngredients(ingredient, event.target.value)} />
     })
 
     function ingredientsButtons() {
-        if (recipe.ingredients.length > 1) {
+        if (ingredients.length > 1) {
             return (
                 <>
-                    <Button variant="primary" type="button" onClick={addIngredient}>+</Button>
-                    <Button variant="primary" type="button" onClick={removeIngredient}>-</Button>
+                    <Button variant="primary" type="button" onClick={addIngredients}>+</Button>
+                    <Button variant="primary" type="button" onClick={removeIngredients}>-</Button>
                 </>
             )
         };
-        return <Button variant="primary" type="button" onClick={addIngredient}>+</Button>;
+        return <Button variant="primary" type="button" onClick={addIngredients}>+</Button>;
     };
 
     return (
@@ -117,7 +92,7 @@ function CreateRecipeForm(props) {
             <Form.Group className="mb-3">
                 <Form.Label>Recipe Image*</Form.Label>
                 <Form.Control type="file" onChange={handleImage} />
-                <Image className="mt-2 d-block" src={recipe?.imageUrl} alt={labelInputRef.current?.value} rounded />
+                <Image className="mt-2 d-block" src={imageUrl} alt={labelInputRef.current?.value} rounded />
                 <Form.Text className="text-muted">
                     Images files only.
                 </Form.Text>
@@ -136,7 +111,7 @@ function CreateRecipeForm(props) {
             <Form.Group className="mb-3">
                 <Form.Label>Recipe ingredients*</Form.Label>
                 {ingredientsButtons()}
-                {IngredientsList}
+                {ingredientsList}
             </Form.Group>
 
             <Form.Group className="mb-3">
