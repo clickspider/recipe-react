@@ -1,23 +1,12 @@
 import CreateRecipeForm from '../components/Forms/CreateRecipeForm';
 
-interface Recipe {
-    image: object | null;
-    imageUrl: string;
-    ingredients: { value: string; }[];
-    url: string;
-    label: string;
-    vegetarian: boolean;
-    numOfPeople: string;
-    id: string;
-    likes: number;
-    date: string;
-    creatorId: string;
-}
+import { Recipe } from "../common/types";
 
 
 function CreateRecipe() {
     function addRecipe(recipe: Recipe) {
         console.log(recipe)
+        return recipe;
     }
     return (
         <section>

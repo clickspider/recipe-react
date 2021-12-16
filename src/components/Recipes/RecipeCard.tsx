@@ -2,19 +2,7 @@ import Card from 'react-bootstrap/Card';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
-interface Recipe {
-    image: object | null;
-    imageUrl: string;
-    ingredients: { value: string; }[];
-    url: string;
-    label: string;
-    vegetarian: boolean;
-    numOfPeople: string;
-    id: string;
-    likes: number;
-    date: string;
-    creatorId: string;
-}
+import { Recipe } from "../../common/types";
 
 function RecipeCard({ recipe }: { recipe: Recipe }) {
     return <Row sm={1} md={12}>

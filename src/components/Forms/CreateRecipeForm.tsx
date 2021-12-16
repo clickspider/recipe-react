@@ -4,21 +4,10 @@ import Image from 'react-bootstrap/Image'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 
-interface Recipe {
-    image: object | null;
-    imageUrl: string;
-    ingredients: { value: string; }[];
-    url: string;
-    label: string;
-    vegetarian: boolean;
-    numOfPeople: string;
-    id: string;
-    likes: number;
-    date: string;
-    creatorId: string;
-}
+
+import { Recipe } from "../../common/types";
 interface Props {
-    onAddRecipe: (recipe: Recipe) => void;
+    onAddRecipe: (recipe: Recipe) => Recipe;
 }
 
 function CreateRecipeForm(props: Props) {
