@@ -4,24 +4,35 @@ import Image from 'react-bootstrap/Image'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 
-function CreateRecipeForm(props) {
+interface Recipe {
+    image: object | null;
+    imageUrl: string;
+    ingredients: { value: string; }[];
+    url: string;
+    label: string;
+    vegetarian: boolean;
+    numOfPeople: string;
+    id: string;
+    likes: number;
+    date: string;
+    creatorId: string;
+}
+interface Props {
+    onAddRecipe: (recipe: Recipe) => void;
+}
 
-    const [image, setImage] = useState(null);
+function CreateRecipeForm(props: Props) {
+
+    const [image, setImage] = useState<object | null>(null);
     const [imageUrl, setImageUrl] = useState("https://via.placeholder.com/150");
     const [ingredients, setIngredients] = useState([{ value: "" }]);
-    const urlInputRef = useRef();
-    const labelInputRef = useRef();
-    const checkboxInputRef = useRef();
-    const selectInputRef = useRef();
+    const urlInputRef = useRef<HTMLInputElement>(null);
+    const titleInputRef = useRef<HTMLInputElement>(null);
+    const checkboxInputRef = useRef<HTMLInputElement>(null);
+    const selectInputRef = useRef<HTMLSelectElement>(null);
 
-    function updateIngredients(ingredientToUpdate, newIngredientValue) {
-        setIngredients((prevIngredients) => {
-            const copyIngredients = [...prevIngredients];
-            const index = copyIngredients.findIndex(prevIngredient => prevIngredient === ingredientToUpdate)
-            if (index === -1) return console.error('Could not find ingredient to update');
-            copyIngredients[index].value = newIngredientValue;
-            return copyIngredients;
-        })
+    function updateIngredients(ingredientToUpdateValue: string) {
+        setIngredients(prevIngredients => prevIngredients.map(ingredient => ingredient.value === ingredientToUpdateValue ? { value: ingredientToUpdateValue } : ingredient));
     };
 
     function addIngredients() {
@@ -36,13 +47,14 @@ function CreateRecipeForm(props) {
         })
     };
 
-    function handleImage(event) {
-        const [file] = event.target.files;
+    function handleImage(event: React.ChangeEvent<HTMLInputElement>) {
+        const target = event.target as HTMLInputElement;
+        const file: File = (target.files as FileList)[0];
         if (!file) return;
         if (file.type.match("image.*")) {
             const fileReader = new FileReader();
             fileReader.addEventListener("load", () => {
-                setImageUrl(fileReader.result)
+                setImageUrl(fileReader.result as string);
             });
             fileReader.readAsDataURL(file);
             return setImage(file);
@@ -50,10 +62,10 @@ function CreateRecipeForm(props) {
         return alert("Images only!");
     }
 
-    function submitHandler(event) {
+    function submitHandler(event: { preventDefault: () => void; }) {
         event.preventDefault();
         const enteredUrl = urlInputRef.current?.value;
-        const enteredLabel = labelInputRef.current?.value;
+        const enteredLabel = titleInputRef.current?.value;
         const enteredCheckbox = checkboxInputRef.current?.checked;
         const enteredSelect = selectInputRef.current?.value;
 
@@ -67,11 +79,11 @@ function CreateRecipeForm(props) {
             numOfPeople: enteredSelect,
         };
 
-        props.onAddRecipe(recipeData);
+        props.onAddRecipe(recipeData as Recipe);
     };
 
     const ingredientsList = ingredients.map((ingredient, index) => {
-        return <Form.Control key={index} type="text" placeholder="Add your ingredient" onChange={(event) => updateIngredients(ingredient, event.target.value)} />
+        return <Form.Control key={index} type="text" placeholder="Add your ingredient" onChange={(event) => updateIngredients(event.target.value)} />
     })
 
     function ingredientsButtons() {
@@ -92,7 +104,7 @@ function CreateRecipeForm(props) {
             <Form.Group className="mb-3">
                 <Form.Label>Recipe Image*</Form.Label>
                 <Form.Control type="file" onChange={handleImage} />
-                <Image className="mt-2 d-block" src={imageUrl} alt={labelInputRef.current?.value} rounded />
+                <Image className="mt-2 d-block" src={imageUrl} alt={titleInputRef.current?.value} rounded />
                 <Form.Text className="text-muted">
                     Images files only.
                 </Form.Text>
@@ -105,7 +117,7 @@ function CreateRecipeForm(props) {
 
             <Form.Group className="mb-3">
                 <Form.Label>Recipe Headline*</Form.Label>
-                <Form.Control type="text" placeholder="Italian pizza with cheese" ref={labelInputRef} />
+                <Form.Control type="text" placeholder="Italian pizza with cheese" ref={titleInputRef} />
             </Form.Group>
 
             <Form.Group className="mb-3">

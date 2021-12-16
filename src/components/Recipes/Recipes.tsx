@@ -7,7 +7,7 @@ import classes from './Recipes.module.css';
 
 
 function Recipes() {
-    const [recipes] = useState(RecipesData);
+    const [recipes] = useState(RecipesData.recipes);
     const listRecipes = recipes.map((recipe) => <RecipeCard recipe={recipe} key={recipe.id} />);
     return (
         <section className={classes.recipesView + ' d-flex'}>
