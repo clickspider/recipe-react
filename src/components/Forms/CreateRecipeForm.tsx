@@ -20,20 +20,19 @@ function CreateRecipeForm(props: Props) {
     const checkboxInputRef = useRef<HTMLInputElement>(null);
     const selectInputRef = useRef<HTMLSelectElement>(null);
 
-    function updateIngredients(ingredientToUpdateValue: string) {
-        setIngredients(prevIngredients => prevIngredients.map(ingredient => ingredient.value === ingredientToUpdateValue ? { value: ingredientToUpdateValue } : ingredient));
+
+    function updateIngredients(indexToUpdate: number, ingredientToUpdateValue: string) {
+        const newIngredients = [...ingredients];
+        newIngredients[indexToUpdate].value = ingredientToUpdateValue;
+        setIngredients(newIngredients);
     };
 
     function addIngredients() {
-        setIngredients(prevIngredients => [...prevIngredients, { value: '' }]);
+        setIngredients([...ingredients, { value: "" }]);
     };
 
     function removeIngredients() {
-        setIngredients((prevIngredients) => {
-            const copyIngredients = [...prevIngredients];
-            copyIngredients.pop();
-            return copyIngredients;
-        })
+        setIngredients(prevIngredients => prevIngredients.slice(0, -1));
     };
 
     function handleImage(event: React.ChangeEvent<HTMLInputElement>) {
@@ -41,51 +40,46 @@ function CreateRecipeForm(props: Props) {
         const file: File = (target.files as FileList)[0];
         if (!file) return;
         if (file.type.match("image.*")) {
-            const fileReader = new FileReader();
-            fileReader.addEventListener("load", () => {
-                setImageUrl(fileReader.result as string);
-            });
-            fileReader.readAsDataURL(file);
-            return setImage(file);
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                setImage(file);
+                setImageUrl(reader.result as string);
+            };
+            return;
         }
         return alert("Images only!");
-    }
+    };
 
     function submitHandler(event: { preventDefault: () => void; }) {
         event.preventDefault();
-        const enteredUrl = urlInputRef.current?.value;
-        const enteredLabel = titleInputRef.current?.value;
-        const enteredCheckbox = checkboxInputRef.current?.checked;
-        const enteredSelect = selectInputRef.current?.value;
-
-        const recipeData = {
+        const recipe: Recipe = {
             image,
             imageUrl,
             ingredients,
-            url: enteredUrl,
-            label: enteredLabel,
-            vegetarian: enteredCheckbox,
-            numOfPeople: enteredSelect,
+            url: urlInputRef.current!.value,
+            label: titleInputRef.current!.value,
+            vegetarian: checkboxInputRef.current!.checked,
+            numOfPeople: selectInputRef.current!.value,
+            id: "",
+            likes: 0,
+            date: new Date().toISOString(),
+            creatorId: "",
         };
-
-        props.onAddRecipe(recipeData as Recipe);
+        props.onAddRecipe(recipe);
     };
 
     const ingredientsList = ingredients.map((ingredient, index) => {
-        return <Form.Control key={index} type="text" placeholder="Add your ingredient" onChange={(event) => updateIngredients(event.target.value)} />
-    })
-
-    function ingredientsButtons() {
-        if (ingredients.length > 1) {
-            return (
-                <>
-                    <Button variant="primary" type="button" onClick={addIngredients}>+</Button>
-                    <Button variant="primary" type="button" onClick={removeIngredients}>-</Button>
-                </>
-            )
-        };
-        return <Button variant="primary" type="button" onClick={addIngredients}>+</Button>;
-    };
+        return (
+            <Form.Control
+                key={index}
+                type="text"
+                placeholder="Ingredient"
+                value={ingredient.value}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => updateIngredients(index, event.target.value)}
+            />
+        );
+    });
 
     return (
         <Form onSubmit={submitHandler}>
@@ -111,7 +105,10 @@ function CreateRecipeForm(props: Props) {
 
             <Form.Group className="mb-3">
                 <Form.Label>Recipe ingredients*</Form.Label>
-                {ingredientsButtons()}
+                <div className="d-flex">
+                    <Button variant="success" onClick={addIngredients}>Add</Button>
+                    {ingredients.length > 1 && <Button variant="danger" onClick={removeIngredients}>Remove</Button>}
+                </div>
                 {ingredientsList}
             </Form.Group>
 
