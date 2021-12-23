@@ -1,0 +1,11 @@
+.recipeTitle {
+    line-height: 4rem !important;
+    max-width: 245px;
+    padding-left: 10px;
+}
+
+.recipeTitle__overflow {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
